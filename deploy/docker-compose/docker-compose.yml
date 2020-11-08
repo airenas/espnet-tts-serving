@@ -1,0 +1,13 @@
+version: '3.7'
+
+services:
+  espnet-tts-serving:
+    image: airenas/espnet-tts-serving:${SERVICE_VERSION}
+    ports:
+      - "${SERVICE_PORT}:8000"
+    environment:
+      MODEL_NAME: "model.loss.best"
+      MODEL_PATH: "/model"
+    # restart: unless-stopped
+    volumes:
+      - ${MODEL_PATH}:/model
