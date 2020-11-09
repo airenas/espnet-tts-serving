@@ -15,6 +15,7 @@ def create_service():
     )
     setup_requests(app)
     setup_routes(app)
+    setup_vars(app)
     setup_model(app)
     return app
 
@@ -25,11 +26,14 @@ def setup_routes(app):
     app.include_router(model.router, prefix="")
 
 
-def setup_model(app):
+def setup_vars(app):
     logger.info("Loading model")
     app.model_name = os.environ.get("MODEL_NAME", "model.loss.best")
     app.model_path = os.environ.get("MODEL_PATH", "/model")
     app.mode_loaded = False
+
+
+def setup_model(app):
     esp_model = EspNETModel(app.model_path, app.model_name)
 
     def calc(text, model):
