@@ -23,11 +23,16 @@ def test_read_main():
 
 
 def test_info():
-    client, _ = init_test_app()
+    client, app = init_test_app()
 
     response = client.get("/info")
     assert response.status_code == 200
     assert response.json() == {'loaded': False, 'name': 'model.loss.best'}
+
+    app.model_loaded = True
+    response = client.get("/info")
+    assert response.status_code == 200
+    assert response.json() == {'loaded': True, 'name': 'model.loss.best'}
 
 
 def test_calculate_fail():

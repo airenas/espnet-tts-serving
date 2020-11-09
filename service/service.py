@@ -30,7 +30,7 @@ def setup_vars(app):
     logger.info("Loading model")
     app.model_name = os.environ.get("MODEL_NAME", "model.loss.best")
     app.model_path = os.environ.get("MODEL_PATH", "/model")
-    app.mode_loaded = False
+    app.model_loaded = False
 
 
 def setup_model(app):
@@ -40,7 +40,7 @@ def setup_model(app):
         return esp_model.calculate(text)
 
     app.calculate = calc
-    app.mode_loaded = True
+    app.model_loaded = True
     logger.info("Loaded")
 
 

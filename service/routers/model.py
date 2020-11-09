@@ -19,5 +19,5 @@ async def calculate(input: api.Input, request: Request):
 @router.get("/info", tags=["model"], response_model=api.Info)
 async def get_info(request: Request):
     """Returns models info."""
-    res = api.Info(name=request.app.model_name, loaded=False)
+    res = api.Info(name=request.app.model_name, loaded=request.app.model_loaded)
     return res
