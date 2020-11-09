@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from starlette.requests import Request
 
 from service.api import api
@@ -8,6 +8,9 @@ router = APIRouter()
 
 @router.post("/model", tags=["model"], response_model=api.Output)
 async def calculate(input: api.Input, request: Request):
+    if input.text == "":
+        raise HTTPException(status_code=400, detail="No text")
+
     res_data = request.app.calculate(input.text, input.model)
     res = api.Output(data=res_data)
     return res

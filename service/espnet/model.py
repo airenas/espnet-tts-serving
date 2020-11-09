@@ -1,7 +1,7 @@
 import base64
 import io
 import os
-import sys
+import pathlib
 import time
 from argparse import Namespace
 
@@ -12,6 +12,32 @@ from espnet.utils.dynamic_import import dynamic_import
 from fastapi.logger import logger
 
 
+class Vocab:
+    def __init__(self, file):
+        if isinstance(file, str) or isinstance(file, pathlib.Path):
+            with open(file) as f:
+                lines = f.readlines()
+        else:
+            lines = file.readlines()
+
+        lines = [line.replace("\n", "").split(" ") for line in lines]
+        self.char_to_id = {c: int(i) for c, i in lines}
+        self.i_dim = len(self.char_to_id) + 2  # start from 0 and + eos
+
+    def map(self, text):
+        char_seq = text.split(" ")
+        id_seq = []
+        for c in char_seq:
+            if c.isspace():
+                id_seq += [self.char_to_id["<space>"]]
+            elif c not in self.char_to_id.keys():
+                id_seq += [self.char_to_id["<unk>"]]
+            else:
+                id_seq += [self.char_to_id[c]]
+        id_seq += [self.i_dim - 1]  # <eos>
+        return id_seq
+
+
 class EspNETModel:
     def __init__(self, model_dir, name):
         logger.info("Model path: %s" % model_dir)
@@ -20,33 +46,22 @@ class EspNETModel:
         dict_path = os.path.join(model_dir, "vocab")
         model_path = os.path.join(model_dir, name)
 
-        with open(dict_path) as f:
-            lines = f.readlines()
-
-        lines = [line.replace("\n", "").split(" ") for line in lines]
-        self.char_to_id = {c: int(i) for c, i in lines}
+        self.vocab = Vocab(dict_path)
 
         self.device = torch.device("cpu")
-        self.idim, odim, train_args = get_model_conf(model_path)
+        i_dim, o_dim, train_args = get_model_conf(model_path)
+        if i_dim != self.vocab.i_dim:
+            raise Exception("Vocab size %d is not as expected %d" % (self.vocab.i_dim, i_dim))
         model_class = dynamic_import(train_args.model_module)
-        model = model_class(self.idim, odim, train_args)
+        model = model_class(i_dim, o_dim, train_args)
         torch_load(model_path, model)
         self.model = model.eval().to(self.device)
         self.inference_args = Namespace(**{"threshold": 0.5, "minlenratio": 0.0, "maxlenratio": 10.0})
         logger.info("Model loaded - now ready to synthesize!")
 
     def frontend(self, text):
-        charseq = text.split(" ")
-        idseq = []
-        for c in charseq:
-            if c.isspace():
-                idseq += [self.char_to_id["<space>"]]
-            elif c not in self.char_to_id.keys():
-                idseq += [self.char_to_id["<unk>"]]
-            else:
-                idseq += [self.char_to_id[c]]
-        idseq += [self.idim - 1]  # <eos>
-        return torch.LongTensor(idseq).view(-1).to(self.device)
+        ids = self.vocab.map(text)
+        return torch.LongTensor(ids).view(-1).to(self.device)
 
     def calculate(self, data):
         with torch.no_grad():

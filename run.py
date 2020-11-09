@@ -9,10 +9,7 @@ import logging
 
 ll = os.environ.get('LOG_LEVEL', 'INFO').upper()
 logger.setLevel(level=ll)
-if __name__ != "__main__":
-    logger.handlers = [logging.StreamHandler(sys.stdout)]
-    # unicorn_logger = logging.getLogger('unicorn')
-    # logger.setLevel(unicorn_logger.level)
+logger.handlers = [logging.StreamHandler(sys.stdout)]
 
 logger.info("Starting espnet-tts-serving service")
 app = create_service()
