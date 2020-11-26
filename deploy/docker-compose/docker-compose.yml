@@ -6,8 +6,8 @@ services:
     ports:
       - "${SERVICE_PORT}:8000"
     environment:
-      MODEL_NAME: "model.loss.best"
-      MODEL_PATH: "/model"
+      MODEL_ZIP_PATH: "/model/${MODEL}"
+      DEVICE: ${DEVICE}
     # restart: unless-stopped
     volumes:
       - ${MODEL_PATH}:/model

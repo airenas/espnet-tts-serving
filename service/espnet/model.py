@@ -13,7 +13,7 @@ class ESPNetModel:
         logger.info("Model zip path: %s" % model_zip_path)
 
         d = ModelDownloader("~/.cache/espnet")
-        m_extracted = d.download_and_unpack(model_zip_path)
+        m_extracted = d.unpack_local_file(model_zip_path)
         logger.info("Model extraction info: %s" % m_extracted)
         self.tts = Text2Speech(**m_extracted,
                                device=device,

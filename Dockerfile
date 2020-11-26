@@ -13,6 +13,7 @@ RUN .venv/bin/pip install --no-cache-dir -r requirements.txt
 # second unnamed stage
 FROM python:3.6.12-slim-stretch as runner
 WORKDIR /app
+RUN apt-get update && apt-get install -y libsndfile1
 COPY --from=builder /app/.venv /app/.venv
 ENV PATH=/app/.venv:/app/.venv/lib:/app/.venv/bin:/app:$PATH
 

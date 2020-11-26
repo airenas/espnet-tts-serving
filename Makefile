@@ -2,7 +2,7 @@
 MODEL_PATH?=./model
 #####################################################################################
 service=airenas/espnet-tts-serving
-version=0.1
+version=0.2
 commit_count=$(shell git rev-list --count HEAD)
 #####################################################################################
 test:
