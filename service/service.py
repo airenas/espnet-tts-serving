@@ -5,13 +5,13 @@ import urllib3
 from fastapi import FastAPI
 from fastapi.logger import logger
 
-from service.espnet.model import EspNETModel
+from service.espnet.model import ESPNetModel
 
 
 def create_service():
     app = FastAPI(
-        title="EspNET TTS serving",
-        version="0.1",
+        title="ESPnet TTS serving",
+        version="0.2",
     )
     setup_requests(app)
     setup_routes(app)
@@ -28,13 +28,13 @@ def setup_routes(app):
 
 def setup_vars(app):
     logger.info("Loading model")
-    app.model_name = os.environ.get("MODEL_NAME", "model.loss.best")
-    app.model_path = os.environ.get("MODEL_PATH", "/model")
+    app.model_zip_path = os.environ.get("MODEL_ZIP_PATH", "/model/model.zip")
+    app.device = os.environ.get("DEVICE", "cpu")
     app.model_loaded = False
 
 
 def setup_model(app):
-    esp_model = EspNETModel(app.model_path, app.model_name)
+    esp_model = ESPNetModel(app.model_zip_path, app.device)
 
     def calc(text, model):
         return esp_model.calculate(text)

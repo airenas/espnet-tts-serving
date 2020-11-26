@@ -4,6 +4,7 @@ from pydantic.main import BaseModel
 
 class Info(BaseModel):
     name: Optional[str] = None
+    device: Optional[str] = None
     loaded: bool = False
 
 

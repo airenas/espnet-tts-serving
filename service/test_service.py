@@ -27,12 +27,17 @@ def test_info():
 
     response = client.get("/info")
     assert response.status_code == 200
-    assert response.json() == {'loaded': False, 'name': 'model.loss.best'}
+    assert response.json() == {'device': 'cpu', 'loaded': False, 'name': '/model/model.zip'}
 
     app.model_loaded = True
     response = client.get("/info")
     assert response.status_code == 200
-    assert response.json() == {'loaded': True, 'name': 'model.loss.best'}
+    assert response.json() == {'device': 'cpu', 'loaded': True, 'name': '/model/model.zip'}
+
+    app.device = 'cuda'
+    response = client.get("/info")
+    assert response.status_code == 200
+    assert response.json() == {'device': 'cuda', 'loaded': True, 'name': '/model/model.zip'}
 
 
 def test_calculate_fail():
@@ -70,9 +75,9 @@ def test_calculate():
 
 
 def test_environment():
-    os.environ["MODEL_NAME"] = "m1"
-    os.environ["MODEL_PATH"] = "/m"
+    os.environ["MODEL_ZIP_PATH"] = "/m1/m.zip"
+    os.environ["DEVICE"] = "cuda"
     ta = FastAPI()
     service.setup_vars(ta)
-    assert ta.model_name == "m1"
-    assert ta.model_path == "/m"
+    assert ta.model_zip_path == "/m1/m.zip"
+    assert ta.device == "cuda"
