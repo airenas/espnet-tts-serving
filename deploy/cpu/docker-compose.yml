@@ -7,7 +7,7 @@ services:
       - "${SERVICE_PORT}:8000"
     environment:
       MODEL_ZIP_PATH: "/model/${MODEL}"
-      DEVICE: ${DEVICE}
+      DEVICE: cpu
     # restart: unless-stopped
     volumes:
       - ${MODEL_PATH}:/model
