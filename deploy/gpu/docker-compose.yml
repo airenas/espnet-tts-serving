@@ -1,0 +1,15 @@
+version: '3.7'
+
+services:
+  espnet-tts-serving:
+    image: airenas/espnet-tts-serving-gpu:${SERVICE_VERSION}
+    ports:
+      - "${SERVICE_PORT}:8000"
+    environment:
+      MODEL_ZIP_PATH: "/model/${MODEL}"
+      DEVICE: cuda
+      NVIDIA_VISIBLE_DEVICES: all
+    # restart: unless-stopped
+    volumes:
+      - ${MODEL_PATH}:/model
+    runtime: nvidia
