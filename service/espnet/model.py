@@ -11,6 +11,7 @@ from fastapi.logger import logger
 class ESPNetModel:
     def __init__(self, model_zip_path, device):
         logger.info("Model zip path: %s" % model_zip_path)
+        logger.info("Device: %s" % device)
 
         d = ModelDownloader("~/.cache/espnet")
         m_extracted = d.unpack_local_file(model_zip_path)

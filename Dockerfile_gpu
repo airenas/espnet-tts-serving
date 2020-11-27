@@ -1,0 +1,32 @@
+# first stage
+FROM nvidia/cuda:11.1-base-ubuntu18.04 as builder
+WORKDIR /app
+RUN apt-get update && apt-get install -y curl wget gcc build-essential
+
+RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-4.5.12-Linux-x86_64.sh -O ~/miniconda.sh && \
+    /bin/bash ~/miniconda.sh -b -p /opt/conda
+RUN /opt/conda/bin/conda create -y -n esp python=3.6.12
+ENV PATH=/opt/conda/envs/esp/bin:$PATH
+RUN pip install --no-cache-dir numpy==1.19.4
+COPY requirements.txt /app
+RUN pip install --no-cache-dir -r requirements.txt
+COPY requirements_gpu.txt /app
+RUN pip install --no-cache-dir -r requirements_gpu.txt
+RUN pip uninstall -y pip
+
+# second stage
+FROM nvidia/cuda:11.1-base-ubuntu18.04 as runner
+WORKDIR /app
+RUN apt-get update && apt-get install -y libsndfile1
+
+COPY --from=builder /opt/conda/envs/esp/bin /opt/conda/envs/esp/bin
+COPY --from=builder /opt/conda/envs/esp/lib /opt/conda/envs/esp/lib
+ENV PATH=/opt/conda/envs/esp/bin:$PATH
+ENV LC_ALL=C.UTF-8
+ENV LANG=C.UTF-8
+
+## final image
+from runner
+COPY ./run.py /app
+COPY ./service /app/service
+CMD [ "uvicorn", "run:app", "--host", "0.0.0.0", "--port", "8000"]

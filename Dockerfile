@@ -8,7 +8,9 @@ RUN .venv/bin/pip install --no-cache-dir numpy==1.19.4
 RUN .venv/bin/pip install --no-cache-dir torch==1.7.0+cpu -f https://download.pytorch.org/whl/torch_stable.html
 
 COPY requirements.txt /app
+COPY requirements_cpu.txt /app
 RUN .venv/bin/pip install --no-cache-dir -r requirements.txt
+RUN .venv/bin/pip install --no-cache-dir -r requirements_cpu.txt
 
 # second unnamed stage
 FROM python:3.6.12-slim-stretch as runner
