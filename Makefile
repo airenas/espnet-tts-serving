@@ -8,8 +8,23 @@ commit_count=$(shell git rev-list --count HEAD)
 #####################################################################################
 test:
 	pytest
+prepare-env:
+	conda create -y -n esp-$(DEVICE) python=3.6.12
+drop-env:
+	conda remove --name esp-$(DEVICE) --all
+install-req:
+	pip install numpy==1.19.4
+ifeq ($(DEVICE),cpu)
+	pip install torch==1.7.0+cpu -f https://download.pytorch.org/whl/torch_stable.html
+	pip install -r requirements.txt
+	pip install -r requirements_cpu.txt
+else
+	pip install -r requirements.txt
+	pip install -r requirements_gpu.txt
+endif
+
 run:
-	MODEL_PATH=$(MODEL_PATH) python run.py
+	MODEL_ZIP_PATH=$(MODEL_ZIP_PATH) DEVICE=$(DEVICE) PORT=$(PORT) python run.py
 ########### DOCKER ##################################################################
 tag=$(service):$(version).$(commit_count)
 dbuild: $(dist_dir)/$(executable_name)
