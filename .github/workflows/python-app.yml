@@ -17,6 +17,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+      - name: Install sndfile
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libsndfile1
       - name: Set up Python 3.6
         uses: actions/setup-python@v2
         with:
@@ -28,6 +32,7 @@ jobs:
           pip install numpy==1.19.4
           pip install --no-cache-dir torch==1.7.0+cpu -f https://download.pytorch.org/whl/torch_stable.html
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          if [ -f requirements_cpu.txt ]; then pip install -r requirements_cpu.txt; fi
       - name: Lint with flake8
         run: |
           # stop the build if there are Python syntax errors or undefined names
