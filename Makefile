@@ -30,9 +30,9 @@ logs:
 	mkdir -p $@
 install-service: deploy/service/espnet.service | logs
 	cp deploy/service/espnet.service /etc/systemd/system/
-    systemctl enable espnet.service
-uninstall-service: deploy/service/espnet.service | logs
-    systemctl disable espnet.service
+	systemctl enable espnet.service
+uninstall-service:
+	systemctl disable espnet.service
 	rm -f /etc/systemd/system/espnet.service
 deploy/service/espnet.service: deploy/service/espnet.service.in
 	cat $< | envsubst > $@
