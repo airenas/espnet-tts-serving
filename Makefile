@@ -25,6 +25,14 @@ endif
 
 run:
 	MODEL_ZIP_PATH=$(MODEL_ZIP_PATH) DEVICE=$(DEVICE) PORT=$(PORT) python run.py
+########### SERVICE#################################################################
+install-service: deploy/service/espnet.service
+	cp deploy/service/espnet.service /etc/system.d/system/
+deploy/service/espnet.service: deploy/service/espnet.service.in
+	cat $< | envsubst > $@
+run-service:
+	source ~/miniconda3/etc/profile.d/conda.sh; conda activate esp-$(DEVICE); \
+		MODEL_ZIP_PATH=$(MODEL_ZIP_PATH) DEVICE=$(DEVICE) PORT=$(PORT) python run.py
 ########### DOCKER ##################################################################
 tag=$(service):$(version).$(commit_count)
 dbuild: $(dist_dir)/$(executable_name)

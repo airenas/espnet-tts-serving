@@ -1,0 +1,14 @@
+[Unit]
+Description=ESPnet serving service
+After=network.target
+
+[Service]
+ExecStart=make run-service
+WorkingDirectory=${PWD}
+StandardOutput=append:${PWD}/logs/service.log
+StandardError=append:${PWD}/logs/service.err
+Restart=always
+User=${USER}
+
+[Install]
+WantedBy=multi-user.target
