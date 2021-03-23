@@ -103,3 +103,4 @@ urllib3==1.25.11
 uvicorn==0.12.2
 Werkzeug==1.0.1
 zipp==3.4.0
+starlette_exporter==0.7.0
