@@ -11,7 +11,7 @@ async def calculate(input: api.Input, request: Request):
     if input.text == "":
         raise HTTPException(status_code=400, detail="No text")
 
-    res_data = request.app.calculate(input.text, input.model, input.speed_control_alpha)
+    res_data = request.app.calculate(input.text, input.model)
     res = api.Output(data=res_data)
     return res
 

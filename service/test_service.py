@@ -63,10 +63,9 @@ def test_calculate_fail_empty():
 def test_calculate():
     client, app = init_test_app()
 
-    def test_calc(text, model, speed):
+    def test_calc(text, model):
         assert text == "in text"
         assert model == "m"
-        assert speed is None
         return "olia"
 
     app.calculate = test_calc
@@ -74,19 +73,6 @@ def test_calculate():
     assert response.status_code == 200
     assert response.json() == {"data": "olia", "error": None}
 
-def test_calculate_pass_speed():
-    client, app = init_test_app()
-
-    def test_calc(text, model, speed):
-        assert text == "in text"
-        assert model == "m"
-        assert speed == 1.2
-        return "olia"
-
-    app.calculate = test_calc
-    response = client.post("/model", json={"text": "in text", "model": "m", "speedAlpha": 1.2})
-    assert response.status_code == 200
-    assert response.json() == {"data": "olia", "error": None}
 
 def test_environment():
     os.environ["MODEL_ZIP_PATH"] = "/m1/m.zip"

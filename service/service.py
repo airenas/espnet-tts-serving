@@ -43,8 +43,8 @@ def setup_vars(app):
 def setup_model(app):
     esp_model = ESPNetModel(app.model_zip_path, app.device)
 
-    def calc(text, model, speed_control_alpha: float = None):
-        return esp_model.calculate(text, speed_control_alpha)
+    def calc(text, model):
+        return esp_model.calculate(text)
 
     app.calculate = calc
     app.model_loaded = True
