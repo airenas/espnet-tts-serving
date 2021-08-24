@@ -6,11 +6,13 @@ from fastapi import FastAPI
 from fastapi.logger import logger
 
 from service.espnet.model import ESPNetModel
+from service.metrics import MetricsKeeper
 
 
 def setup_prometheus(app):
     from starlette_exporter import PrometheusMiddleware, handle_metrics
     app.add_middleware(PrometheusMiddleware, app_name="espnet-tts-serving", group_paths=True, prefix="model")
+    app.metrics = MetricsKeeper()
     app.add_route("/metrics", handle_metrics)
 
 
@@ -41,10 +43,12 @@ def setup_vars(app):
 
 
 def setup_model(app):
-    esp_model = ESPNetModel(app.model_zip_path, app.device)
+    with app.metrics.load_metric.time():
+        esp_model = ESPNetModel(app.model_zip_path, app.device)
 
     def calc(text, model):
-        return esp_model.calculate(text)
+        with app.metrics.calc_metric.time():
+            return esp_model.calculate(text)
 
     app.calculate = calc
     app.model_loaded = True
