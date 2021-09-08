@@ -10,6 +10,8 @@ from service.service import create_service
 
 ll = os.environ.get('LOG_LEVEL', 'INFO').upper()
 logger.setLevel(level=ll)
+logging.getLogger("smart_load_balancer").setLevel(level=ll)
+logging.getLogger("service").setLevel(level=ll)
 handler = logging.StreamHandler(sys.stdout)
 formatter = logging.Formatter("[%(asctime)s.%(msecs)03d] %(levelname)s - %(message)s", "%Y-%m-%d %H:%M:%S")
 handler.setFormatter(formatter)

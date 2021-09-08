@@ -1,11 +1,13 @@
 import base64
 import io
+import logging
 import time
 
 import torch
 from espnet2.bin.tts_inference import Text2Speech
 from espnet_model_zoo.downloader import ModelDownloader
-from fastapi.logger import logger
+
+logger = logging.getLogger(__name__)
 
 
 class ESPNetModel:

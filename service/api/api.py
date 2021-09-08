@@ -10,7 +10,7 @@ class Info(BaseModel):
 
 class Input(BaseModel):
     text: str
-    model: Optional[str] = None
+    voice: Optional[str] = None
 
 
 class Output(BaseModel):
