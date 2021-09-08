@@ -10,15 +10,19 @@ from espnet_model_zoo.downloader import ModelDownloader
 logger = logging.getLogger(__name__)
 
 
-class ESPNetModel:
-    def __init__(self, model_zip_path, device):
-        logger.info("Model zip path: %s" % model_zip_path)
-        logger.info("Device: %s" % device)
+def extract_model(model_zip_path):
+    logger.info("Model zip path: %s" % model_zip_path)
+    d = ModelDownloader("~/.cache/espnet")
+    m_extracted = d.unpack_local_file(model_zip_path)
+    logger.info("Model extraction info: %s" % m_extracted)
+    return m_extracted
 
-        d = ModelDownloader("~/.cache/espnet")
-        m_extracted = d.unpack_local_file(model_zip_path)
-        logger.info("Model extraction info: %s" % m_extracted)
-        self.tts = Text2Speech(**m_extracted,
+
+class ESPNetModel:
+    def __init__(self, model_data, device):
+        logger.info("Device: %s" % device)
+        logger.info("Model data: %s" % model_data)
+        self.tts = Text2Speech(**model_data,
                                device=device,
                                # Only for Tacotron 2\n",
                                threshold=0.5,

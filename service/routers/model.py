@@ -27,5 +27,12 @@ def calculate(inp: api.Input, request: Request):
 @router.get("/info", tags=["model"], response_model=api.Info)
 def get_info(request: Request):
     """Returns models info."""
-    res = api.Info(name=request.app.model_zip_path, device=request.app.device, loaded=request.app.model_loaded)
+    res = api.Info(models=request.app.voices.get_info(), workers=request.app.workers)
+    return res
+
+
+@router.get("/live", tags=["service"], response_model=api.Live)
+def get_live(request: Request):
+    """Returns service health state."""
+    res = api.Live(ok=request.app.live)
     return res

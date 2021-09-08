@@ -3,10 +3,11 @@ import os
 
 import requests
 import urllib3
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from smart_load_balancer.balancer import Balancer
 from smart_load_balancer.work import Work, logger
 
+from service.config import Config
 from service.espnet.model import ESPNetModel
 from service.metrics import MetricsKeeper
 
@@ -21,8 +22,21 @@ def setup_prometheus(app):
 
 
 def setup_balancer(app):
-    app.balancer = Balancer(wrk_count=2)
+    app.balancer = Balancer(wrk_count=app.workers)
     app.balancer.start()
+
+
+def setup_config(app):
+    with open(app.config_file, 'r') as data:
+        app.voices = Config(data, app.device)
+
+
+def test_models(app):
+    for key in app.voices.voices:
+        vc = app.voices.voices.get(key)
+        logger.info("Loading model for %s ", vc.name)
+        ESPNetModel(vc.data, vc.device)
+        logger.info("Loaded model for %s ", vc.name)
 
 
 def create_service():
@@ -30,12 +44,15 @@ def create_service():
         title="ESPnet TTS serving",
         version="0.3",
     )
+    setup_vars(app)
+    setup_config(app)
+    test_models(app)
     setup_prometheus(app)
     setup_requests(app)
     setup_routes(app)
-    setup_vars(app)
     setup_balancer(app)
     setup_model(app)
+    app.live = True
     return app
 
 
@@ -46,8 +63,11 @@ def setup_routes(app):
 
 
 def setup_vars(app):
-    app.model_zip_path = os.environ.get("MODEL_ZIP_PATH", "/model/model.zip")
+    app.config_file = os.environ.get("CONFIG_FILE", "/model/config.yaml")
     app.device = os.environ.get("DEVICE", "cpu")
+    app.workers = int(os.environ.get("WORKERS", "1"))
+    if app.workers == 0:
+        raise Exception("No workers configured env.WORKERS")
     app.model_loaded = False
 
 
@@ -61,8 +81,11 @@ def setup_model(app):
             workers_data["name"] = ""
             workers_data["model"] = None
             logger.info("Loading model for %s ", voice)
+            vc = app.voices.get(voice)
+            if vc is None:
+                raise HTTPException(status_code=400, detail="No voice '%s'" % voice)
             with app.metrics.load_metric.time():
-                model = ESPNetModel(app.model_zip_path, app.device)
+                model = ESPNetModel(vc.data, vc.device)
             workers_data["model"] = model
             workers_data["name"] = voice
 
