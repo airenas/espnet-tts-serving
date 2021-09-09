@@ -11,6 +11,7 @@ from service.api import api
 def get_info_test() -> List[api.ModelInfo]:
     return [api.ModelInfo(name="olia", device="cpu")]
 
+
 def init_test_app():
     app = FastAPI()
     service.setup_requests(app)
@@ -42,10 +43,25 @@ def test_info():
 
     def empty():
         return []
+
     app.get_info_func = empty
     response = client.get("/info")
     assert response.status_code == 200
     assert response.json() == {'models': [], 'workers': 2}
+
+
+def test_live():
+    client, app = init_test_app()
+
+    app.live = True
+    response = client.get("/live")
+    assert response.status_code == 200
+    assert response.json() == {'ok': True}
+
+    app.live = False
+    response = client.get("/live")
+    assert response.status_code == 200
+    assert response.json() == {'ok': False}
 
 
 def test_calculate_fail():
