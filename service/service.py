@@ -29,6 +29,7 @@ def setup_balancer(app):
 def setup_config(app):
     with open(app.config_file, 'r') as data:
         app.voices = Config(data, app.device)
+    app.get_info_func = app.voices.get_info
 
 
 def test_models(app):
@@ -68,7 +69,7 @@ def setup_vars(app):
     app.workers = int(os.environ.get("WORKERS", "1"))
     if app.workers == 0:
         raise Exception("No workers configured env.WORKERS")
-    app.model_loaded = False
+    app.live = False
 
 
 def setup_model(app):

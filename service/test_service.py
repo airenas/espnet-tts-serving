@@ -1,16 +1,22 @@
 import os
+from typing import List
 
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from service import service
+from service.api import api
 
+
+def get_info_test() -> List[api.ModelInfo]:
+    return [api.ModelInfo(name="olia", device="cpu")]
 
 def init_test_app():
     app = FastAPI()
     service.setup_requests(app)
     service.setup_routes(app)
     service.setup_vars(app)
+    app.get_info_func = get_info_test
     client = TestClient(app)
     return client, app
 
@@ -27,17 +33,19 @@ def test_info():
 
     response = client.get("/info")
     assert response.status_code == 200
-    assert response.json() == {'device': 'cpu', 'loaded': False, 'name': '/model/model.zip'}
+    assert response.json() == {'models': [{'device': 'cpu', 'name': 'olia'}], 'workers': 1}
 
-    app.model_loaded = True
+    app.workers = 2
     response = client.get("/info")
     assert response.status_code == 200
-    assert response.json() == {'device': 'cpu', 'loaded': True, 'name': '/model/model.zip'}
+    assert response.json() == {'models': [{'device': 'cpu', 'name': 'olia'}], 'workers': 2}
 
-    app.device = 'cuda'
+    def empty():
+        return []
+    app.get_info_func = empty
     response = client.get("/info")
     assert response.status_code == 200
-    assert response.json() == {'device': 'cuda', 'loaded': True, 'name': '/model/model.zip'}
+    assert response.json() == {'models': [], 'workers': 2}
 
 
 def test_calculate_fail():
@@ -46,10 +54,10 @@ def test_calculate_fail():
     response = client.get("/model")
     assert response.status_code == 405
 
-    response = client.post("/model", json={"olia": "olia"})
+    response = client.post("/model", json={"olia": "olia", "voice": "a"})
     assert response.status_code == 422
 
-    response = client.post("/model", json={"olia": "olia"})
+    response = client.post("/model", json={"olia": "olia", "voice": "a"})
     assert response.status_code == 422
 
 
@@ -69,15 +77,17 @@ def test_calculate():
         return "olia"
 
     app.calculate = test_calc
-    response = client.post("/model", json={"text": "in text", "model": "m"})
+    response = client.post("/model", json={"text": "in text", "voice": "m"})
     assert response.status_code == 200
     assert response.json() == {"data": "olia", "error": None}
 
 
 def test_environment():
-    os.environ["MODEL_ZIP_PATH"] = "/m1/m.zip"
+    os.environ["CONFIG_FILE"] = "/m1/c.yaml"
     os.environ["DEVICE"] = "cuda"
+    os.environ["WORKERS"] = "12"
     ta = FastAPI()
     service.setup_vars(ta)
-    assert ta.model_zip_path == "/m1/m.zip"
+    assert ta.config_file == "/m1/c.yaml"
     assert ta.device == "cuda"
+    assert ta.workers == 12

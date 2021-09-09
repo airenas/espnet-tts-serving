@@ -27,7 +27,7 @@ def calculate(inp: api.Input, request: Request):
 @router.get("/info", tags=["model"], response_model=api.Info)
 def get_info(request: Request):
     """Returns models info."""
-    res = api.Info(models=request.app.voices.get_info(), workers=request.app.workers)
+    res = api.Info(models=request.app.get_info_func(), workers=request.app.workers)
     return res
 
 
