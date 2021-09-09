@@ -24,7 +24,7 @@ else
 endif
 
 run:
-	MODEL_ZIP_PATH=$(MODEL_ZIP_PATH) DEVICE=$(DEVICE) PORT=$(PORT) python run.py
+	CONFIG_FILE=$(CONFIG_FILE) DEVICE=$(DEVICE) PORT=$(PORT) WORKERS=$(WORKERS) python run.py
 ########### SERVICE#################################################################
 logs:
 	mkdir -p $@
