@@ -1,6 +1,7 @@
 import os
 from typing import List
 
+import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
@@ -107,3 +108,10 @@ def test_environment():
     assert ta.config_file == "/m1/c.yaml"
     assert ta.device == "cuda"
     assert ta.workers == 12
+
+
+def test_env_fail():
+    os.environ["WORKERS"] = "0"
+    ta = FastAPI()
+    with pytest.raises(Exception):
+        service.setup_vars(ta)

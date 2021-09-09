@@ -35,9 +35,9 @@ def setup_config(app):
 def test_models(app):
     for key in app.voices.voices:
         vc = app.voices.voices.get(key)
-        logger.info("Loading model for %s ", vc.name)
+        logger.info("Test model load for %s ", vc.name)
         ESPNetModel(vc.data, vc.device)
-        logger.info("Loaded model for %s ", vc.name)
+        logger.info("OK - model can be loaded for %s ", vc.name)
 
 
 def create_service():
