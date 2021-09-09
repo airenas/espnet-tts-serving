@@ -6,10 +6,12 @@ services:
     ports:
       - "${SERVICE_PORT}:8000"
     environment:
-      MODEL_ZIP_PATH: "/model/${MODEL}"
       DEVICE: cuda
       NVIDIA_VISIBLE_DEVICES: all
-    # restart: unless-stopped
+      CONFIG_FILE: /config/voices.yaml
+      WORKERS: 1
+        # restart: unless-stopped
     volumes:
-      - ${MODEL_PATH}:/model
+      - ${MODELS_PATH}:/models:ro
+      - ./voices.yaml:/config/voices.yaml:ro
     runtime: nvidia

@@ -1,8 +1,9 @@
 # first stage
 FROM nvidia/cuda:11.1-base-ubuntu18.04 as builder
 WORKDIR /app
-RUN apt-get update && apt-get install -y curl wget gcc build-essential
-
+RUN apt-get update && apt-get install -y curl wget gcc build-essential git
+ENV LC_ALL=C.UTF-8
+ENV LANG=C.UTF-8
 RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-4.5.12-Linux-x86_64.sh -O ~/miniconda.sh && \
     /bin/bash ~/miniconda.sh -b -p /opt/conda
 RUN /opt/conda/bin/conda create -y -n esp python=3.6.12
