@@ -9,7 +9,7 @@ stop:
 clean: stop
 #####################################################################################
 test:
-	curl -i -X POST http://localhost:8000/model -d '{"text":"o", "model":"aaaa", "speedAlpha": 1.0}'
+	curl -i -X POST http://localhost:8000/model -d '{"text":"o", "voice":"astra", "speedAlpha": 1.0}'
 
 test-file:
 	curl -i -X POST http://localhost:8000/model -d@data.json

@@ -1,0 +1,7 @@
+voices:
+  - name: astra
+    file: /models/sabina.p03.fastspeech2.ave-01.zip
+    device: "{{device}}"
+  - name: vytautas.v01
+    file: /models/vytautas.v02.fastspeech2.ave-01.zip
+    device: "{{device}}"

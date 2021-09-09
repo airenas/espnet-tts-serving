@@ -2,8 +2,8 @@
 MODEL_PATH?=./model
 #####################################################################################
 service=airenas/espnet-tts-serving
-version=0.2
-version-gpu=0.3
+version=0.3
+version-gpu=0.4
 commit_count=$(shell git rev-list --count HEAD)
 #####################################################################################
 test:
@@ -38,7 +38,7 @@ deploy/service/espnet.service: deploy/service/espnet.service.in
 	cat $< | envsubst > $@
 run-service:
 	. ~/miniconda3/etc/profile.d/conda.sh; conda activate esp-$(DEVICE); \
-		MODEL_ZIP_PATH=$(MODEL_ZIP_PATH) DEVICE=$(DEVICE) PORT=$(PORT) python run.py
+		CONFIG_FILE=$(CONFIG_FILE) DEVICE=$(DEVICE) PORT=$(PORT) WORKERS=$(WORKERS) python run.py
 ########### DOCKER ##################################################################
 tag=$(service):$(version).$(commit_count)
 dbuild: $(dist_dir)/$(executable_name)

@@ -6,8 +6,10 @@ services:
     ports:
       - "${SERVICE_PORT}:8000"
     environment:
-      MODEL_ZIP_PATH: "/model/${MODEL}"
+      CONFIG_FILE: /config/voices.yaml
       DEVICE: cpu
+      WORKERS: 1
     # restart: unless-stopped
     volumes:
-      - ${MODEL_PATH}:/model
+      - ${MODELS_PATH}:/models:ro
+      - ./voices.yaml:/config/voices.yaml:ro
