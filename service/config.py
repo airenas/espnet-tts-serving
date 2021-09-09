@@ -17,10 +17,12 @@ class VoiceConfig:
         self.file = file
 
 
-def parse(data_loaded, def_device) -> dict:
+def parse(data_loaded, def_device="cpu") -> dict:
     res = dict()
     for c in data_loaded["voices"]:
-        vc = VoiceConfig(c["name"], c["device"], c["file"])
+        vc = VoiceConfig(c["name"], c.get("device"), c["file"])
+        if not vc.device:
+            vc.device = def_device
         vc.device = vc.device.replace("{{device}}", def_device)
         res[c["name"]] = vc
     return res
