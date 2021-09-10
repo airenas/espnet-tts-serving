@@ -1,7 +1,7 @@
 DOCKER_IP=$(shell echo $$(ip addr show docker0 | grep -Po 'inet \K[\d.]+'))
 
-vu?=3
-req?=20
+vu?=50
+req?=2000
 voices?=2
 
 info:

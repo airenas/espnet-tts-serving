@@ -9,7 +9,7 @@ services:
       DEVICE: cuda
       NVIDIA_VISIBLE_DEVICES: all
       CONFIG_FILE: /config/voices.yaml
-      WORKERS: 1
+      WORKERS: ${WORKERS}
         # restart: unless-stopped
     volumes:
       - ${MODELS_PATH}:/models:ro
