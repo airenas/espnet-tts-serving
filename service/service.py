@@ -105,8 +105,7 @@ def setup_model(app):
         return res.res
 
     app.calculate = calc
-    app.model_loaded = True
-    logger.info("Loaded")
+    logger.info("Ready")
 
 
 def setup_requests(app):
