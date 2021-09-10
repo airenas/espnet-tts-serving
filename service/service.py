@@ -5,6 +5,7 @@ import requests
 import urllib3
 from fastapi import FastAPI, HTTPException
 from smart_load_balancer.balancer import Balancer
+from smart_load_balancer.strategy.strategy import GroupsByNameWithTimeNoSameWorker
 from smart_load_balancer.work import Work, logger
 
 from service.config import Config
@@ -22,7 +23,7 @@ def setup_prometheus(app):
 
 
 def setup_balancer(app):
-    app.balancer = Balancer(wrk_count=app.workers)
+    app.balancer = Balancer(wrk_count=app.workers, strategy=GroupsByNameWithTimeNoSameWorker())
     app.balancer.start()
 
 
