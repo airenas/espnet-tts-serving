@@ -5,6 +5,7 @@ req?=2000
 voices?=2
 data_dir?=$(CURDIR)
 url?=http://localhost:8000
+path?=/live
 
 #################################################################################################
 bin:
@@ -28,7 +29,7 @@ load: info bin/.k6.done
 	VOICES_NUM=$(voices) URL=$(url)/model DATA_DIR=$(data_dir) ./bin/k6 run --vus $(vu) --iterations $(req) load.js
 
 load-live: info
-	URL=$(url)/live ./bin/k6 run --vus $(vu) --iterations $(req) load_live.js
+	URL=$(url)$(path) ./bin/k6 run --vus $(vu) --iterations $(req) load_live.js
 #################################################################################################
 dload: info
 	docker run --add-host=host.docker.internal:$(DOCKER_IP) \
@@ -40,7 +41,7 @@ dload: info
 
 dload-live: info
 	docker run --add-host=host.docker.internal:$(DOCKER_IP) \
-		--env URL=http://host.docker.internal:8000/live \
+		--env URL=http://host.docker.internal:8000$(path) \
 		-i loadimpact/k6 run --vus $(vu) --iterations $(req) - < load_live.js
 
 #################################################################################################
