@@ -7,7 +7,7 @@ version-gpu=0.4
 commit_count=$(shell git rev-list --count HEAD)
 #####################################################################################
 test:
-	pytest
+	pytest -v
 prepare-env:
 	conda create -y -n esp-$(DEVICE) python=3.6.12
 drop-env:
