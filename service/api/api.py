@@ -1,6 +1,6 @@
 from typing import List
 
-from pydantic.fields import Optional
+from pydantic.fields import Optional, Field
 from pydantic.main import BaseModel
 
 
@@ -17,6 +17,7 @@ class Info(BaseModel):
 class Input(BaseModel):
     text: str
     voice: Optional[str] = None
+    speed_control_alpha: Optional[float] = Field(alias='speedAlpha')
 
 
 class Output(BaseModel):

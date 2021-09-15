@@ -73,8 +73,14 @@ def setup_vars(app):
     app.live = False
 
 
+class ModelData:
+    def __init__(self, text, speed_control_alpha):
+        self.speed_control_alpha = speed_control_alpha
+        self.text = text
+
+
 def setup_model(app):
-    def calc_model(voice, text, workers_data):
+    def calc_model(voice: str, in_data: ModelData, workers_data):
         w_name = workers_data.get("name")
         model = workers_data.get("model")
         if w_name != voice:
@@ -92,12 +98,12 @@ def setup_model(app):
             workers_data["name"] = voice
 
         with app.metrics.calc_metric.time():
-            return model.calculate(text)
+            return model.calculate(in_data.text, in_data.speed_control_alpha)
 
-    def calc(text, voice):
+    def calc(text, voice, speed_control_alpha):
         if not voice:
             raise Exception("no voice")
-        work = Work(name=voice, data=text, work_func=calc_model)
+        work = Work(name=voice, data=ModelData(text, speed_control_alpha), work_func=calc_model)
         app.balancer.add_wrk(work)
         res = work.wait()
         if res.err is not None:

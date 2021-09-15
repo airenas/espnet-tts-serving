@@ -3,5 +3,5 @@ voices:
     file: /models/sabina.p03.fastspeech2.ave-01.zip
     device: "{{device}}"
   - name: vytautas.v01
-    file: /models/vytautas.v02.fastspeech2.ave-01.zip
+    file: /models/vytautas.v05.fastspeech2.1000-01.zip
     device: "{{device}}"

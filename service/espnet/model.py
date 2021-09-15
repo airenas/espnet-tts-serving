@@ -10,6 +10,12 @@ from espnet_model_zoo.downloader import ModelDownloader
 logger = logging.getLogger(__name__)
 
 
+def check_alpha(speed_control_alpha):
+    if speed_control_alpha is None or speed_control_alpha < 0.1:
+        return None
+    return speed_control_alpha
+
+
 def extract_model(model_zip_path):
     logger.info("Model zip path: %s" % model_zip_path)
     d = ModelDownloader("~/.cache/espnet")
@@ -39,10 +45,10 @@ class ESPNetModel:
         self.device = torch.device(device)
         logger.info("Model loaded - now ready to synthesize!")
 
-    def calculate(self, data):
+    def calculate(self, data: str, speed_control_alpha: float = None):
         with torch.no_grad():
             start = time.time()
-            _, y, *_ = self.tts(data)
+            _, y, *_ = self.tts(text=data, speed_control_alpha=check_alpha(speed_control_alpha))
             end = time.time()
             elapsed = (end - start)
             logger.info(f"acoustic model done: {elapsed:5f} s")

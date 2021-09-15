@@ -88,13 +88,29 @@ def test_calculate_fail_empty():
 def test_calculate():
     client, app = init_test_app()
 
-    def test_calc(text, model):
+    def test_calc(text, model, speedAlpha):
         assert text == "in text"
         assert model == "m"
+        assert speedAlpha is None
         return "olia"
 
     app.calculate = test_calc
     response = client.post("/model", json={"text": "in text", "voice": "m"})
+    assert response.status_code == 200
+    assert response.json() == {"data": "olia", "error": None}
+
+
+def test_calculate_pass_speed():
+    client, app = init_test_app()
+
+    def test_calc(text, model, speedAlpha):
+        assert text == "in text"
+        assert model == "m"
+        assert speedAlpha == 1.2
+        return "olia"
+
+    app.calculate = test_calc
+    response = client.post("/model", json={"text": "in text", "voice": "m", "speedAlpha": 1.2})
     assert response.status_code == 200
     assert response.json() == {"data": "olia", "error": None}
 

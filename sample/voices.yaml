@@ -3,5 +3,5 @@ voices:
     file: //home/airenas/projects/data/tts/sabina.p03.fastspeech2.ave-01.zip
     device: "{{device}}"
   - name: vytautas.v01
-    file: /home/airenas/projects/data/tts/vytautas.v02.fastspeech2.ave-01.zip
+    file: /home/airenas/projects/data/tts/vytautas.v05.fastspeech2.1000-01.zip
     device: "{{device}}"
