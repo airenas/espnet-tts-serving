@@ -92,12 +92,12 @@ def setup_model(app):
             vc = app.voices.get(voice)
             if vc is None:
                 raise HTTPException(status_code=400, detail="No voice '%s'" % voice)
-            with app.metrics.load_metric.time():
+            with app.metrics.load_metric.labels(voice).time():
                 model = ESPNetModel(vc.data, vc.device)
             workers_data["model"] = model
             workers_data["name"] = voice
 
-        with app.metrics.calc_metric.time():
+        with app.metrics.calc_metric.labels(voice).time():
             return model.calculate(in_data.text, in_data.speed_control_alpha)
 
     def calc(text, voice, speed_control_alpha):
