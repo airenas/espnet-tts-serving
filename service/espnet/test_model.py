@@ -2,8 +2,8 @@ from service.espnet.model import check_alpha
 
 
 def test_alpha():
-    assert check_alpha(None) is 1
-    assert check_alpha(0) is 1
+    assert check_alpha(None) == 1
+    assert check_alpha(0) == 1
     assert check_alpha(0.2) == 0.2
     assert check_alpha(0.999) == 0.999
     assert check_alpha(2) == 2
