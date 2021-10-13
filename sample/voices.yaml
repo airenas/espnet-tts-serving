@@ -5,3 +5,4 @@ voices:
   - name: vytautas.v01
     file: /home/airenas/projects/data/tts/vytautas.v05.fastspeech2.1000-01.zip
     device: "{{device}}"
+    speedShift: 0.9

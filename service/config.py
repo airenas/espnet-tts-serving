@@ -11,16 +11,17 @@ def load_yaml(stream):
 
 
 class VoiceConfig:
-    def __init__(self, name, device, file):
+    def __init__(self, name, device, file, speed_shift: float = 1):
         self.name = name
         self.device = device
         self.file = file
+        self.speed_shift = speed_shift
 
 
 def parse(data_loaded, def_device="cpu") -> dict:
     res = dict()
     for c in data_loaded["voices"]:
-        vc = VoiceConfig(c["name"], c.get("device"), c["file"])
+        vc = VoiceConfig(c["name"], c.get("device"), c["file"], c.get("speedShift"))
         if not vc.device:
             vc.device = def_device
         vc.device = vc.device.replace("{{device}}", def_device)

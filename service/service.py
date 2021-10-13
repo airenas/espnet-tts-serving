@@ -37,7 +37,7 @@ def test_models(app):
     for key in app.voices.voices:
         vc = app.voices.voices.get(key)
         logger.info("Test model load for %s ", vc.name)
-        ESPNetModel(vc.data, vc.device)
+        ESPNetModel(vc.data, vc.device, vc.speed_shift)
         logger.info("OK - model can be loaded for %s ", vc.name)
 
 
@@ -93,7 +93,7 @@ def setup_model(app):
             if vc is None:
                 raise HTTPException(status_code=400, detail="No voice '%s'" % voice)
             with app.metrics.load_metric.labels(voice).time():
-                model = ESPNetModel(vc.data, vc.device)
+                model = ESPNetModel(vc.data, vc.device, vc.speed_shift)
             workers_data["model"] = model
             workers_data["name"] = voice
 

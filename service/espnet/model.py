@@ -10,10 +10,16 @@ from espnet_model_zoo.downloader import ModelDownloader
 logger = logging.getLogger(__name__)
 
 
-def check_alpha(speed_control_alpha):
-    if speed_control_alpha is None or speed_control_alpha < 0.1:
-        return None
-    return speed_control_alpha
+def check_alpha(speed_control_alpha: float, speed_shift: float = 1):
+    res = speed_control_alpha
+    if res is None:
+        res = 1
+    if speed_shift is not None:
+        res = res * speed_shift
+    if res < 0.1 or res > 10:
+        logger.warning("Speed alpha %.2f is not in range [.1, 10] - set to 1" % res)
+        return 1
+    return res
 
 
 def extract_model(model_zip_path):
@@ -25,9 +31,10 @@ def extract_model(model_zip_path):
 
 
 class ESPNetModel:
-    def __init__(self, model_data, device):
+    def __init__(self, model_data, device, speed_shift: float = 1):
         logger.info("Device: %s" % device)
         logger.info("Model data: %s" % model_data)
+        logger.info("Model speed shift: %s" % ("None" if speed_shift is None else format(speed_shift, '.2f')))
         self.tts = Text2Speech(**model_data,
                                device=device,
                                # Only for Tacotron 2\n",
@@ -43,12 +50,13 @@ class ESPNetModel:
 
         self.tts.spc2wav = None  # Disable griffin-lim\n",
         self.device = torch.device(device)
+        self.speed_shift = speed_shift
         logger.info("Model loaded - now ready to synthesize!")
 
     def calculate(self, data: str, speed_control_alpha: float = None):
         with torch.no_grad():
             start = time.time()
-            _, y, *_ = self.tts(text=data, speed_control_alpha=check_alpha(speed_control_alpha))
+            _, y, *_ = self.tts(text=data, speed_control_alpha=check_alpha(speed_control_alpha, self.speed_shift))
             end = time.time()
             elapsed = (end - start)
             logger.info(f"acoustic model done: {elapsed:5f} s")
