@@ -10,7 +10,7 @@ from smart_load_balancer.work import Work, logger
 
 from service.config import Config
 from service.espnet.model import ESPNetModel
-from service.metrics import MetricsKeeper
+from service.metrics import MetricsKeeper, ElapsedLogger
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +37,8 @@ def test_models(app):
     for key in app.voices.voices:
         vc = app.voices.voices.get(key)
         logger.info("Test model load for %s ", vc.name)
-        ESPNetModel(vc.data, vc.device, vc.speed_shift)
+        with ElapsedLogger(logger.info, "load time"):
+            ESPNetModel(vc.data, vc.device, vc.speed_shift)
         logger.info("OK - model can be loaded for %s ", vc.name)
 
 
@@ -93,7 +94,8 @@ def setup_model(app):
             if vc is None:
                 raise HTTPException(status_code=400, detail="No voice '%s'" % voice)
             with app.metrics.load_metric.labels(voice).time():
-                model = ESPNetModel(vc.data, vc.device, vc.speed_shift)
+                with ElapsedLogger(logger.info, "load time"):
+                    model = ESPNetModel(vc.data, vc.device, vc.speed_shift)
             workers_data["model"] = model
             workers_data["name"] = voice
 
@@ -101,14 +103,15 @@ def setup_model(app):
             return model.calculate(in_data.text, in_data.speed_control_alpha)
 
     def calc(text, voice, speed_control_alpha, priority: int = 0):
-        if not voice:
-            raise Exception("no voice")
-        work = Work(name=voice, data=ModelData(text, speed_control_alpha), work_func=calc_model, priority=priority)
-        app.balancer.add_wrk(work)
-        res = work.wait()
-        if res.err is not None:
-            raise res.err
-        return res.res
+        with ElapsedLogger(logger.info, "calculate"):
+            if not voice:
+                raise Exception("no voice")
+            work = Work(name=voice, data=ModelData(text, speed_control_alpha), work_func=calc_model, priority=priority)
+            app.balancer.add_wrk(work)
+            res = work.wait()
+            if res.err is not None:
+                raise res.err
+            return res.res
 
     app.calculate = calc
     logger.info("Ready")
