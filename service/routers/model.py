@@ -18,7 +18,7 @@ def calculate(inp: api.Input, request: Request):
     if not inp.voice:
         raise HTTPException(status_code=400, detail="No voice")
 
-    res_data = request.app.calculate(inp.text, inp.voice, inp.speed_control_alpha)
+    res_data = request.app.calculate(inp.text, inp.voice, inp.speed_control_alpha, inp.priority)
     res = api.Output(data=res_data)
     logger.info("Response ready")
     return res

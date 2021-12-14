@@ -100,10 +100,10 @@ def setup_model(app):
         with app.metrics.calc_metric.labels(voice).time():
             return model.calculate(in_data.text, in_data.speed_control_alpha)
 
-    def calc(text, voice, speed_control_alpha):
+    def calc(text, voice, speed_control_alpha, priority: int = 0):
         if not voice:
             raise Exception("no voice")
-        work = Work(name=voice, data=ModelData(text, speed_control_alpha), work_func=calc_model)
+        work = Work(name=voice, data=ModelData(text, speed_control_alpha), work_func=calc_model, priority=priority)
         app.balancer.add_wrk(work)
         res = work.wait()
         if res.err is not None:

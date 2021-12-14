@@ -18,6 +18,7 @@ class Input(BaseModel):
     text: str
     voice: Optional[str] = None
     speed_control_alpha: Optional[float] = Field(alias='speedAlpha')
+    priority: Optional[int] = 0
 
 
 class Output(BaseModel):

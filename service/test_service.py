@@ -88,10 +88,11 @@ def test_calculate_fail_empty():
 def test_calculate():
     client, app = init_test_app()
 
-    def test_calc(text, model, speedAlpha):
+    def test_calc(text, model, speedAlpha, priority):
         assert text == "in text"
         assert model == "m"
         assert speedAlpha is None
+        assert priority == 0
         return "olia"
 
     app.calculate = test_calc
@@ -103,7 +104,7 @@ def test_calculate():
 def test_calculate_pass_speed():
     client, app = init_test_app()
 
-    def test_calc(text, model, speedAlpha):
+    def test_calc(text, model, speedAlpha, priority):
         assert text == "in text"
         assert model == "m"
         assert speedAlpha == 1.2
@@ -111,6 +112,21 @@ def test_calculate_pass_speed():
 
     app.calculate = test_calc
     response = client.post("/model", json={"text": "in text", "voice": "m", "speedAlpha": 1.2})
+    assert response.status_code == 200
+    assert response.json() == {"data": "olia", "error": None}
+
+
+def test_calculate_pass_priority():
+    client, app = init_test_app()
+
+    def test_calc(text, model, speedAlpha, priority):
+        assert text == "in text"
+        assert model == "m"
+        assert priority == 1000
+        return "olia"
+
+    app.calculate = test_calc
+    response = client.post("/model", json={"text": "in text", "voice": "m", "speedAlpha": 1.2, "priority": 1000})
     assert response.status_code == 200
     assert response.json() == {"data": "olia", "error": None}
 
