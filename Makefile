@@ -53,6 +53,11 @@ dbuild-gpu: $(dist_dir)/$(executable_name)
 
 dpush-gpu: dbuild-gpu
 	docker push $(tag-gpu)
+########### GIT TAG #################################################################
+git-tag:
+	git tag "v$(version-gpu).$(commit_count)"
+git-push-tag:
+	git push origin --tags
 #####################################################################################
 .PHONY:
 	 dbuild dpush
