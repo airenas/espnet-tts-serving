@@ -104,4 +104,4 @@ uvicorn==0.12.2
 Werkzeug==1.0.1
 zipp==3.4.0
 starlette_exporter==0.7.0
-git+git://github.com/airenas/smart_load_balancer.git@v0.2.35#egg=smart_load_balancer
+git+git://github.com/airenas/smart_load_balancer.git@v0.2.37#egg=smart_load_balancer
