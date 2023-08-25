@@ -5,17 +5,17 @@ service=airenas/espnet-tts-serving
 version=0.3
 version-gpu=0.4
 commit_count=$(shell git rev-list --count HEAD)
+torch_version=1.13.1
 #####################################################################################
 test:
 	pytest -v
 prepare-env:
-	conda create -y -n esp-$(DEVICE) python=3.6.12
+	conda create -y -n esp-$(DEVICE) python=3.7
 drop-env:
 	conda remove --name esp-$(DEVICE) --all
 install-req:
-	pip install numpy==1.19.4
+# 	pip install numpy==1.19.4
 ifeq ($(DEVICE),cpu)
-	pip install torch==1.7.0+cpu -f https://download.pytorch.org/whl/torch_stable.html
 	pip install -r requirements.txt
 	pip install -r requirements_cpu.txt
 else

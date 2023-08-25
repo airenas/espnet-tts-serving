@@ -49,6 +49,7 @@ class ESPNetModel:
                                )
 
         self.tts.spc2wav = None  # Disable griffin-lim\n",
+        self.tts.vocoder = None
         self.device = torch.device(device)
         self.speed_shift = speed_shift
         logger.info("Model loaded - now ready to synthesize!")
@@ -56,12 +57,13 @@ class ESPNetModel:
     def calculate(self, data: str, speed_control_alpha: float = None):
         with torch.no_grad():
             start = time.time()
-            _, y, *_ = self.tts(text=data, speed_control_alpha=check_alpha(speed_control_alpha, self.speed_shift))
+            res = self.tts(text=data,
+                                decode_conf={"alpha": check_alpha(speed_control_alpha, self.speed_shift)})
             end = time.time()
             elapsed = (end - start)
             logger.info(f"acoustic model done: {elapsed:5f} s")
         buffer = io.BytesIO()
-        torch.save(y, buffer)
+        torch.save(res["feat_gen"], buffer)
         buffer.seek(0)
         encoded_data = base64.b64encode(buffer.read())
         return encoded_data.decode('ascii')
