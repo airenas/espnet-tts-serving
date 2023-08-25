@@ -6,7 +6,7 @@ import urllib3
 from fastapi import FastAPI, HTTPException
 from smart_load_balancer.balancer import Balancer
 from smart_load_balancer.strategy.strategy import GroupsByNameWithTimeNoSameWorker
-from smart_load_balancer.work import Work, logger
+from smart_load_balancer.work import Work
 
 from service.config import Config
 from service.espnet.model import ESPNetModel
