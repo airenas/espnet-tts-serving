@@ -20,7 +20,7 @@ def check_alpha(speed_control_alpha: float, speed_shift: float = 1):
 def len_fix_np(array, speed_control_alpha):
     if check_alpha(speed_control_alpha) == 1.0:
         return array
-    return numpy.round(array * speed_control_alpha, decimals=0)
+    return numpy.round(array * speed_control_alpha, decimals=0).astype(int)
 
 
 def len_fix(number, speed_control_alpha):
