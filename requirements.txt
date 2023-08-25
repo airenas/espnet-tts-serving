@@ -33,10 +33,6 @@ llvmlite==0.39.1
 nltk==3.8.1
 numba==0.56.4
 numpy==1.21.6
-nvidia-cublas-cu11==11.10.3.66
-nvidia-cuda-nvrtc-cu11==11.7.99
-nvidia-cuda-runtime-cu11==11.7.99
-nvidia-cudnn-cu11==8.5.0.96
 omegaconf==2.3.0
 opt-einsum==3.3.0
 packaging==23.1
@@ -57,7 +53,6 @@ scipy==1.7.3
 sentencepiece==0.1.97
 soundfile==0.12.1
 threadpoolctl==3.1.0
-torch==1.13.1
 torch-complex==0.4.3
 tqdm==4.66.1
 typeguard==2.13.3

@@ -9,10 +9,10 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-4.5.12-Linux-x86
     /bin/bash ~/miniconda.sh -b -p /opt/conda
 RUN /opt/conda/bin/conda create -y -n esp python=3.7
 ENV PATH=/opt/conda/envs/esp/bin:$PATH
-COPY requirements.txt /app
-RUN pip install --no-cache-dir -r requirements.txt
 COPY requirements_gpu.txt /app
 RUN pip install --no-cache-dir -r requirements_gpu.txt
+COPY requirements.txt /app
+RUN pip install --no-cache-dir -r requirements.txt
 RUN pip uninstall -y pip
 
 # second stage
