@@ -57,4 +57,4 @@ class ESPNetModel:
         buffer.seek(0)
         encoded_data = base64.b64encode(buffer.read())
         return {"features": encoded_data.decode('ascii'),
-                "durations": len_fix_np(res["duration"].numpy(), speed_control_alpha).tolist()}
+                "durations": len_fix_np(res["duration"].cpu().numpy(), speed_control_alpha).tolist()}
