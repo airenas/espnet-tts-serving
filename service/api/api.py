@@ -23,6 +23,8 @@ class Input(BaseModel):
 
 class Output(BaseModel):
     data: str
+    durations: Optional[List[int]]
+    silDuration: Optional[int]
     error: Optional[str] = None
 
 
