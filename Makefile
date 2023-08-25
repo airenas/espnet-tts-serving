@@ -7,8 +7,12 @@ version-gpu=0.4
 commit_count=$(shell git rev-list --count HEAD)
 torch_version=1.13.1
 #####################################################################################
-test:
+test/unit:
 	pytest -v
+
+test/lint:
+	flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+	flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 prepare-env:
 	conda create -y -n esp-$(DEVICE) python=3.7
 drop-env:
