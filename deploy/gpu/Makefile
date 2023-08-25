@@ -1,10 +1,10 @@
 -include .env
 #####################################################################################
 start:
-	docker-compose up -d
+	docker compose up -d
 
 stop:
-	docker-compose stop && docker-compose rm -f
+	docker compose down -v
 
 clean: stop
 #####################################################################################

@@ -7,19 +7,9 @@ import torch
 from espnet2.bin.tts_inference import Text2Speech
 from espnet_model_zoo.downloader import ModelDownloader
 
+from service.utils import check_alpha, len_fix_np
+
 logger = logging.getLogger(__name__)
-
-
-def check_alpha(speed_control_alpha: float, speed_shift: float = 1):
-    res = speed_control_alpha
-    if res is None:
-        res = 1
-    if speed_shift is not None:
-        res = res * speed_shift
-    if res < 0.1 or res > 10:
-        logger.warning("Speed alpha %.2f is not in range [.1, 10] - set to 1" % res)
-        return 1
-    return res
 
 
 def extract_model(model_zip_path):
@@ -49,6 +39,7 @@ class ESPNetModel:
                                )
 
         self.tts.spc2wav = None  # Disable griffin-lim\n",
+        self.tts.vocoder = None
         self.device = torch.device(device)
         self.speed_shift = speed_shift
         logger.info("Model loaded - now ready to synthesize!")
@@ -56,12 +47,14 @@ class ESPNetModel:
     def calculate(self, data: str, speed_control_alpha: float = None):
         with torch.no_grad():
             start = time.time()
-            _, y, *_ = self.tts(text=data, speed_control_alpha=check_alpha(speed_control_alpha, self.speed_shift))
+            res = self.tts(text=data,
+                           decode_conf={"alpha": check_alpha(speed_control_alpha, self.speed_shift)})
             end = time.time()
             elapsed = (end - start)
             logger.info(f"acoustic model done: {elapsed:5f} s")
         buffer = io.BytesIO()
-        torch.save(y, buffer)
+        torch.save(res["feat_gen"], buffer)
         buffer.seek(0)
         encoded_data = base64.b64encode(buffer.read())
-        return encoded_data.decode('ascii')
+        return {"features": encoded_data.decode('ascii'),
+                "durations": len_fix_np(res["duration"].cpu().numpy(), speed_control_alpha).tolist()}

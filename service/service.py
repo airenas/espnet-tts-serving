@@ -6,11 +6,12 @@ import urllib3
 from fastapi import FastAPI, HTTPException
 from smart_load_balancer.balancer import Balancer
 from smart_load_balancer.strategy.strategy import GroupsByNameWithTimeNoSameWorker
-from smart_load_balancer.work import Work, logger
+from smart_load_balancer.work import Work
 
 from service.config import Config
 from service.espnet.model import ESPNetModel
 from service.metrics import MetricsKeeper, ElapsedLogger
+from service.utils import len_fix
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +46,7 @@ def test_models(app):
 def create_service():
     app = FastAPI(
         title="ESPnet TTS serving",
-        version="0.3",
+        version="0.4",
     )
     setup_vars(app)
     setup_config(app)
@@ -98,9 +99,12 @@ def setup_model(app):
                     model = ESPNetModel(vc.data, vc.device, vc.speed_shift)
             workers_data["model"] = model
             workers_data["name"] = voice
+            workers_data["silence_duration"] = vc.silence_duration
 
         with app.metrics.calc_metric.labels(voice).time():
-            return model.calculate(in_data.text, in_data.speed_control_alpha)
+            res = model.calculate(in_data.text, in_data.speed_control_alpha)
+        res["silence_duration"] = len_fix(workers_data["silence_duration"], in_data.speed_control_alpha)
+        return res
 
     def calc(text, voice, speed_control_alpha, priority: int = 0):
         with ElapsedLogger(logger.info, "calculate"):

@@ -19,7 +19,8 @@ def calculate(inp: api.Input, request: Request):
         raise HTTPException(status_code=400, detail="No voice")
 
     res_data = request.app.calculate(inp.text, inp.voice, inp.speed_control_alpha, inp.priority)
-    res = api.Output(data=res_data)
+    res = api.Output(data=res_data['features'], durations=res_data.get('durations', None),
+                     silDuration=res_data.get('silence_duration', None))
     return res
 
 
