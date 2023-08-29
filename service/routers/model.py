@@ -20,7 +20,7 @@ def calculate(inp: api.Input, request: Request):
 
     res_data = request.app.calculate(inp.text, inp.voice, inp.speed_control_alpha, inp.priority)
     res = api.Output(data=res_data['features'], durations=res_data.get('durations', None),
-                     silDuration=res_data.get('silence_duration', None))
+                     silDuration=res_data.get('silence_duration', None), step=res_data.get('step', 256))
     return res
 
 

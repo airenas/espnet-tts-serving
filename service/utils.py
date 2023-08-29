@@ -17,7 +17,22 @@ def check_alpha(speed_control_alpha: float, speed_shift: float = 1):
     return res
 
 
-def len_fix_np(array, speed_control_alpha):
+def fix_duration(array, duration_fix):
+    if duration_fix == 0 or len(array) < 3:
+        return array
+    if duration_fix > 0:
+        move = min(duration_fix, array[-1])
+        array[0] += move
+        array[-1] -= move
+    else:
+        move = min(-duration_fix, array[0])
+        array[0] -= move
+        array[-1] += move
+    return array
+
+
+def len_fix_np(array, speed_control_alpha, duration_fix: int = 0):
+    array = fix_duration(array, duration_fix)
     if check_alpha(speed_control_alpha) == 1.0:
         return array
     return numpy.round(array * speed_control_alpha, decimals=0).astype(int)
