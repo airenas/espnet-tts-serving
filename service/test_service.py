@@ -98,7 +98,7 @@ def test_calculate():
     app.calculate = test_calc
     response = client.post("/model", json={"text": "in text", "voice": "m"})
     assert response.status_code == 200
-    assert response.json() == {"data": "olia", "error": None, "durations": [1, 2], "silDuration": 10}
+    assert response.json() == {"data": "olia", "error": None, "durations": [1, 2], "silDuration": 10, "step": 256}
 
 
 def test_calculate_pass_speed():
@@ -113,7 +113,7 @@ def test_calculate_pass_speed():
     app.calculate = test_calc
     response = client.post("/model", json={"text": "in text", "voice": "m", "speedAlpha": 1.2})
     assert response.status_code == 200
-    assert response.json() == {"data": "olia", "error": None, "durations": [1, 2], "silDuration": 10}
+    assert response.json() == {"data": "olia", "error": None, "durations": [1, 2], "silDuration": 10, "step": 256}
 
 
 def test_calculate_pass_priority():
@@ -128,7 +128,7 @@ def test_calculate_pass_priority():
     app.calculate = test_calc
     response = client.post("/model", json={"text": "in text", "voice": "m", "speedAlpha": 1.2, "priority": 1000})
     assert response.status_code == 200
-    assert response.json() == {"data": "olia", "error": None, "durations": [1, 2], "silDuration": None}
+    assert response.json() == {"data": "olia", "error": None, "durations": [1, 2], "silDuration": None, "step": 256}
 
 
 def test_environment():

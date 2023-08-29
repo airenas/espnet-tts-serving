@@ -8,7 +8,7 @@ commit_count=$(shell git rev-list --count HEAD)
 torch_version=1.13.1
 #####################################################################################
 test/unit:
-	pytest -v
+	pytest -vv
 
 test/lint:
 	flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
