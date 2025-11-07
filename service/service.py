@@ -46,7 +46,7 @@ def test_models(app):
 def create_service():
     app = FastAPI(
         title="ESPnet TTS serving",
-        version="0.4",
+        version="0.5",
     )
     setup_vars(app)
     setup_config(app)
