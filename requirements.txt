@@ -12,7 +12,8 @@ decorator==5.1.1
 Distance==0.1.3
 editdistance==0.6.2
 einops==0.6.1
-espnet==202308
+#espnet==202308
+git+https://github.com/airenas/espnet.git@v.202511-ai#egg=espnet
 espnet-tts-frontend==0.0.3
 fast-bss-eval==0.1.3
 filelock==3.12.2
@@ -50,7 +51,7 @@ requests==2.31.0
 resampy==0.4.2
 scikit-learn==1.0.2
 scipy==1.7.3
-sentencepiece==0.1.97
+#sentencepiece==0.1.97
 soundfile==0.12.1
 threadpoolctl==3.1.0
 torch-complex==0.4.3
@@ -66,3 +67,4 @@ fastapi==0.101.1
 starlette_exporter==0.16.0
 espnet-model-zoo==0.1.7
 git+https://github.com/airenas/smart_load_balancer.git@v0.2.37#egg=smart_load_balancer
+ msgpack==1.1.2

@@ -9,7 +9,7 @@ from smart_load_balancer.strategy.strategy import GroupsByNameWithTimeNoSameWork
 from smart_load_balancer.work import Work
 
 from service.config import Config
-from service.espnet.model import ESPNetModel
+from service.espnet.model import ESPNetModel, CalcResult
 from service.metrics import MetricsKeeper, ElapsedLogger
 from service.utils import len_fix
 
@@ -76,15 +76,17 @@ def setup_vars(app):
 
 
 class ModelData:
-    def __init__(self, text, speed_control_alpha):
+    def __init__(self, text, speed_control_alpha, durations_change=None, pitch_change=None):
         self.speed_control_alpha = speed_control_alpha
         self.text = text
+        self.durations_change = durations_change
+        self.pitch_change = pitch_change
 
 
 def setup_model(app):
     def calc_model(voice: str, in_data: ModelData, workers_data):
         w_name = workers_data.get("name")
-        model = workers_data.get("model")
+        model: ESPNetModel = workers_data.get("model")
         if w_name != voice:
             if w_name:
                 logger.info("Unloading model for %s", w_name)
@@ -102,15 +104,20 @@ def setup_model(app):
             workers_data["silence_duration"] = vc.silence_duration
 
         with app.metrics.calc_metric.labels(voice).time():
-            res = model.calculate(in_data.text, in_data.speed_control_alpha)
-        res["silence_duration"] = len_fix(workers_data["silence_duration"], in_data.speed_control_alpha)
+            res = model.calculate(data=in_data.text, speed_control_alpha=in_data.speed_control_alpha,
+                                  durations_change=in_data.durations_change, pitch_change=in_data.pitch_change)
+        res.silence_duration = len_fix(workers_data["silence_duration"], in_data.speed_control_alpha)
         return res
 
-    def calc(text, voice, speed_control_alpha, priority: int = 0):
+    def calc(text, voice, speed_control_alpha, durations_change, pitch_change, priority: int = 0) -> CalcResult:
         with ElapsedLogger(logger.info, "calculate"):
             if not voice:
                 raise Exception("no voice")
-            work = Work(name=voice, data=ModelData(text, speed_control_alpha), work_func=calc_model, priority=priority)
+            work = Work(name=voice, data=ModelData(text=text,
+                                                   speed_control_alpha=speed_control_alpha,
+                                                   durations_change=durations_change,
+                                                   pitch_change=pitch_change),
+                        work_func=calc_model, priority=priority)
             app.balancer.add_wrk(work)
             res = work.wait()
             if res.err is not None:
