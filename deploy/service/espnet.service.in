@@ -5,8 +5,8 @@ After=network.target
 [Service]
 ExecStart=make run-service
 WorkingDirectory=${PWD}
-StandardOutput=append:${PWD}/logs/service.log
-StandardError=append:${PWD}/logs/service.err
+StandardOutput=journal
+StandardError=journal
 Restart=always
 User=${USER}
 
