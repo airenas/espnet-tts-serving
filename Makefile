@@ -14,7 +14,7 @@ test/lint:
 	flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
 	flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 prepare-env:
-	conda create -y -n esp-$(DEVICE) python=3.7
+	conda create -y -n esp-$(DEVICE) python=3.10
 drop-env:
 	conda remove --name esp-$(DEVICE) --all
 install-req:
