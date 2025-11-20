@@ -67,4 +67,4 @@ fastapi==0.101.1
 starlette_exporter==0.16.0
 espnet-model-zoo==0.1.7
 git+https://github.com/airenas/smart_load_balancer.git@v0.2.37#egg=smart_load_balancer
- msgpack==1.1.2
+msgpack==1.1.2
