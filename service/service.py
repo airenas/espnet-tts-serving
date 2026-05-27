@@ -18,7 +18,9 @@ logger = logging.getLogger(__name__)
 
 def setup_prometheus(app):
     from starlette_exporter import PrometheusMiddleware, handle_metrics
-    app.add_middleware(PrometheusMiddleware, app_name="espnet-tts-serving", group_paths=True, prefix="model")
+    app.add_middleware(PrometheusMiddleware, app_name="espnet-tts-serving", group_paths=True, prefix="model",
+                       filter_unhandled_paths=True,
+                       skip_paths=["/metrics", "/live"])
     app.metrics = MetricsKeeper()
     app.add_route("/metrics", handle_metrics)
 
